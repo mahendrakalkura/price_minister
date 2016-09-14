@@ -1,7 +1,6 @@
 defmodule PriceministerCom.Templates do
   @moduledoc false
 
-  require DateTime
   require HTTPoison
   require Kernel
   require PriceministerCom
