@@ -20,27 +20,27 @@ defmodule PriceministerCom.Aliases do
     options = [
       {:params, params}
     ]
-    response = parse_http(HTTPoison.request(method, url, body, headers, options))
-    response
-  end
-
-  def get_aliases(response) when Kernel.is_list(response) do
+    result = parse_http(HTTPoison.request(method, url, body, headers, options))
+    result
   end
 
   def parse_http({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    aliases = parse_xml(body)
-    {:ok, aliases}
+    aliases = parse_body(body)
+    result = {:ok, aliases}
+    result
   end
 
   def parse_http({:ok, %HTTPoison.Response{status_code: status_code}}) do
-    {:error, status_code}
+    result = {:error, status_code}
+    result
   end
 
   def parse_http({:error, %HTTPoison.Error{reason: reason}}) do
-    {:error, reason}
+    result = {:error, reason}
+    result
   end
 
-  def parse_xml(body) do
+  def parse_body(body) do
     aliases = SweetXml.xpath(body, SweetXml.sigil_x("//response/producttypetemplate/alias/text()", 'sl'))
     aliases = Enum.sort(aliases)
     aliases

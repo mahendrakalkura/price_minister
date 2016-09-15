@@ -1,4 +1,6 @@
 defmodule PriceministerCom.Mixfile do
+  @moduledoc false
+
   use Mix.Project
 
   def application do

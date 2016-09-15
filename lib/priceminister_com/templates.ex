@@ -22,44 +22,49 @@ defmodule PriceministerCom.Templates do
     options = [
       {:params, params}
     ]
-    response = parse_http(HTTPoison.request(method, url, body, headers, options))
-    response
+    result = parse_http(HTTPoison.request(method, url, body, headers, options))
+    result
   end
 
   def parse_http({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    template = parse_xml(body)
-    {:ok, template}
+    template = parse_body(body)
+    result = {:ok, template}
+    result
   end
 
   def parse_http({:ok, %HTTPoison.Response{status_code: status_code}}) do
-    {:error, status_code}
+    result = {:error, status_code}
+    result
   end
 
   def parse_http({:error, %HTTPoison.Error{reason: reason}}) do
-    {:error, reason}
+    result = {:error, reason}
+    result
   end
 
-  def parse_xml(body) do
+  def parse_body(body) do
     response = SweetXml.xpath(body, SweetXml.sigil_x("//response", 'e'))
     name = ""
     name_fr = SweetXml.xpath(response, SweetXml.sigil_x("./prdtypelabel/text()", 's'))
     sections = get_sections(response)
-    %{
+    template = %{
       "name" => name,
       "name_fr" => name_fr,
       "sections" => sections,
     }
+    template
   end
 
   def get_sections(response) do
     advert = get_section(response, "advert")
     media = get_section(response, "media")
     product = get_section(response, "product")
-    %{
+    sections = %{
       "advert" => advert,
       "media" => media,
       "product" => product,
     }
+    sections
   end
 
   def get_section(response, section) do
@@ -90,24 +95,28 @@ defmodule PriceministerCom.Templates do
       "name" => name,
       "name_fr" => name_fr,
       "is_mandatory" => is_mandatory,
-      "type" => type,
       "options" => options,
+      "type" => type,
     }
-    %{
+    attribute = %{
       key => value
     }
+    attribute
   end
 
   def get_is_mandatory("0") do
-    false
+    is_mandatory = false
+    is_mandatory
   end
 
   def get_is_mandatory("1") do
-    true
+    is_mandatory = true
+    is_mandatory
   end
 
   def get_is_mandatory(_) do
-    false
+    is_mandatory = false
+    is_mandatory
   end
 
   def get_options(options) do
@@ -118,26 +127,32 @@ defmodule PriceministerCom.Templates do
   end
 
   def get_type(options, "Boolean") when Kernel.map_size(options) == 0 do
-    ~s(input[type="checkbox"])
+    type = ~s(input[type="checkbox"])
+    type
   end
 
   def get_type(options, "Date") when Kernel.map_size(options) == 0 do
-    ~s(input[type="date"])
+    type = ~s(input[type="date"])
+    type
   end
 
   def get_type(options, "Number") when Kernel.map_size(options) == 0 do
-    ~s(input[type="number"])
+    type = ~s(input[type="number"])
+    type
   end
 
   def get_type(options, "Text") when Kernel.map_size(options) == 0 do
-    ~s(input[type="text"])
+    type = ~s(input[type="text"])
+    type
   end
 
   def get_type(options, _type) when Kernel.map_size(options) == 0 do
-    ~s(input[type="text"])
+    type = ~s(input[type="text"])
+    type
   end
 
   def get_type(options, _type) when Kernel.map_size(options) != 0 do
-    "select"
+    type = "select"
+    type
   end
 end

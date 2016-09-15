@@ -8,6 +8,7 @@ defmodule PriceministerCom do
     url = prefix
     url = URI.parse(url)
     url = URI.merge(url, suffix)
-    URI.to_string(url)
+    url = URI.to_string(url)
+    url
   end
 end
