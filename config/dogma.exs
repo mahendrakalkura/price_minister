@@ -1,13 +1,14 @@
-alias Dogma.Rule
+require Dogma.Rule
+require Dogma.RuleSet
 
 use Mix.Config
 
 config :dogma,
   override: [
-    %Rule.FunctionParentheses{
+    %Dogma.Rule.FunctionParentheses{
       enabled: false,
     },
-    %Rule.LineLength{
+    %Dogma.Rule.LineLength{
       max_length: 120,
     },
   ],
