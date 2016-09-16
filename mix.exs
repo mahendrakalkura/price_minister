@@ -1,4 +1,4 @@
-defmodule PriceministerCom.Mixfile do
+defmodule PriceMinister.Mixfile do
   @moduledoc false
 
   use Mix.Project
@@ -22,7 +22,7 @@ defmodule PriceministerCom.Mixfile do
 
   def project() do
     [
-      app: :priceminister_com,
+      app: :price_minister,
       build_embedded: Mix.env == :prod,
       deps: deps(),
       elixir: "~> 1.3",

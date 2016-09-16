@@ -1,4 +1,4 @@
-defmodule PriceministerCom do
+defmodule PriceMinister do
   @moduledoc false
 
   require Map

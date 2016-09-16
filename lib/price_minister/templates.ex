@@ -1,14 +1,14 @@
-defmodule PriceministerCom.Templates do
+defmodule PriceMinister.Templates do
   @moduledoc false
 
   require HTTPoison
   require Kernel
-  require PriceministerCom
+  require PriceMinister
   require SweetXml
 
   def query(channel, alias) do
     method = :get
-    url = PriceministerCom.get_url(channel["url"], "/stock_ws")
+    url = PriceMinister.get_url(channel["url"], "/stock_ws")
     body = ""
     headers = []
     params = %{
