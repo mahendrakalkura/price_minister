@@ -20,7 +20,7 @@ defmodule PriceministerCom.Templates do
       "version" => "2015-02-02",
     }
     options = [
-      {:params, params}
+      {:params, params},
     ]
     result = parse_http(HTTPoison.request(method, url, body, headers, options))
     result

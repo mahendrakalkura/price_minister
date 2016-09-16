@@ -5,18 +5,18 @@
         {
           Credo.Check.Readability.MaxLineLength,
           priority: :low,
-          max_length: 120
-        }
+          max_length: 120,
+        },
       ],
       files: %{
         included: [
           "config/",
           "lib/",
           "test/",
-          "*.exs"
-        ]
+          "*.exs",
+        ],
       },
-      name: "default"
-    }
-  ]
+      name: "default",
+    },
+  ],
 }

@@ -6,8 +6,8 @@ defmodule PriceministerCom.Mixfile do
   def application do
     [
       applications: [
-        :httpoison
-      ]
+        :httpoison,
+      ],
     ]
   end
 
@@ -16,7 +16,7 @@ defmodule PriceministerCom.Mixfile do
       {:credo, "~> 0.4"},
       {:dogma, "~> 0.1"},
       {:httpoison, "~> 0.9.0"},
-      {:sweet_xml, "~> 0.6.1"}
+      {:sweet_xml, "~> 0.6.1"},
     ]
   end
 
@@ -27,7 +27,7 @@ defmodule PriceministerCom.Mixfile do
       deps: deps(),
       elixir: "~> 1.3",
       start_permanent: Mix.env == :prod,
-      version: "0.1.0"
+      version: "0.1.0",
     ]
   end
 end

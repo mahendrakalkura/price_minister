@@ -18,7 +18,7 @@ defmodule PriceministerCom.Aliases do
       "version" => "2011-11-29",
     }
     options = [
-      {:params, params}
+      {:params, params},
     ]
     result = parse_http(HTTPoison.request(method, url, body, headers, options))
     result
