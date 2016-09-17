@@ -2,13 +2,31 @@ defmodule PriceMinister.Aliases do
   @moduledoc false
 
   require HTTPoison
-  require Kernel
   require PriceMinister
   require SweetXml
 
   def query(channel) do
-    method = :post
-    url = PriceMinister.get_url(channel["url"], "/stock_ws")
+    result = get_arguments(channel)
+    result = PriceMinister.http_poison(result)
+    result = PriceMinister.parse_response(result)
+    result = parse_body(result)
+    result
+  end
+
+  def parse_body({:ok, body}) do
+    aliases = get_aliases(body)
+    result = {:ok, aliases}
+    result
+  end
+
+  def parse_body({:error, reason}) do
+    result = {:error, reason}
+    result
+  end
+
+  def get_arguments(channel) do
+    method = :get
+    url = PriceMinister.get_url(channel["url"], "stock_ws")
     body = ""
     headers = []
     params = %{
@@ -20,27 +38,17 @@ defmodule PriceMinister.Aliases do
     options = [
       {:params, params},
     ]
-    result = parse_http(HTTPoison.request(method, url, body, headers, options))
+    result = %{
+      "method" => method,
+      "url" => url,
+      "body" => body,
+      "headers" => headers,
+      "options" => options,
+    }
     result
   end
 
-  def parse_http({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    aliases = parse_body(body)
-    result = {:ok, aliases}
-    result
-  end
-
-  def parse_http({:ok, %HTTPoison.Response{status_code: status_code}}) do
-    result = {:error, status_code}
-    result
-  end
-
-  def parse_http({:error, %HTTPoison.Error{reason: reason}}) do
-    result = {:error, reason}
-    result
-  end
-
-  def parse_body(body) do
+  def get_aliases(body) do
     aliases = SweetXml.xpath(body, SweetXml.sigil_x("//response/producttypetemplate/alias/text()", 'sl'))
     aliases = Enum.sort(aliases)
     aliases

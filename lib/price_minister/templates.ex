@@ -7,8 +7,27 @@ defmodule PriceMinister.Templates do
   require SweetXml
 
   def query(channel, alias) do
+    result = get_arguments(channel, alias)
+    result = PriceMinister.http_poison(result)
+    result = PriceMinister.parse_response(result)
+    result = parse_body(result)
+    result
+  end
+
+  def parse_body({:ok, body}) do
+    template = get_template(body)
+    result = {:ok, template}
+    result
+  end
+
+  def parse_body({:error, reason}) do
+    result = {:error, reason}
+    result
+  end
+
+  def get_arguments(channel, alias) do
     method = :get
-    url = PriceMinister.get_url(channel["url"], "/stock_ws")
+    url = PriceMinister.get_url(channel["url"], "stock_ws")
     body = ""
     headers = []
     params = %{
@@ -22,27 +41,17 @@ defmodule PriceMinister.Templates do
     options = [
       {:params, params},
     ]
-    result = parse_http(HTTPoison.request(method, url, body, headers, options))
+    result = %{
+      "method" => method,
+      "url" => url,
+      "body" => body,
+      "headers" => headers,
+      "options" => options,
+    }
     result
   end
 
-  def parse_http({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    template = parse_body(body)
-    result = {:ok, template}
-    result
-  end
-
-  def parse_http({:ok, %HTTPoison.Response{status_code: status_code}}) do
-    result = {:error, status_code}
-    result
-  end
-
-  def parse_http({:error, %HTTPoison.Error{reason: reason}}) do
-    result = {:error, reason}
-    result
-  end
-
-  def parse_body(body) do
+  def get_template(body) do
     response = SweetXml.xpath(body, SweetXml.sigil_x("//response", 'e'))
     name = ""
     name_fr = SweetXml.xpath(response, SweetXml.sigil_x("./prdtypelabel/text()", 's'))
