@@ -40,6 +40,8 @@ defmodule PriceMinister.Templates do
     }
     options = [
       {:params, params},
+      {:recv_timeout, Application.get_env(:httpoison, :timeout, nil)},
+      {:timeout, Application.get_env(:httpoison, :timeout, nil)},
     ]
     result = %{
       "method" => method,
