@@ -6,22 +6,19 @@ defmodule PriceMinister.Aliases do
   require SweetXml
 
   def query(channel) do
-    result = get_arguments(channel)
-    result = PriceMinister.http_poison(result)
-    result = PriceMinister.parse_response(result)
-    result = parse_body(result)
-    result
+    arguments = get_arguments(channel)
+    response = PriceMinister.http_poison(arguments)
+    body = PriceMinister.parse_response(response)
+    parse_body(body)
   end
 
   def parse_body({:ok, body}) do
     aliases = get_aliases(body)
-    result = {:ok, aliases}
-    result
+    {:ok, aliases}
   end
 
   def parse_body({:error, reason}) do
-    result = {:error, reason}
-    result
+    {:error, reason}
   end
 
   def get_arguments(channel) do
@@ -40,19 +37,20 @@ defmodule PriceMinister.Aliases do
       {:recv_timeout, Application.get_env(:httpoison, :timeout, nil)},
       {:timeout, Application.get_env(:httpoison, :timeout, nil)},
     ]
-    result = %{
+    %{
       "method" => method,
       "url" => url,
       "body" => body,
       "headers" => headers,
       "options" => options,
     }
-    result
   end
 
   def get_aliases(body) do
-    aliases = SweetXml.xpath(body, SweetXml.sigil_x("//response/producttypetemplate/alias/text()", 'sl'))
-    aliases = Enum.sort(aliases)
-    aliases
+    aliases = SweetXml.xpath(
+      body,
+      SweetXml.sigil_x("//response/producttypetemplate/alias/text()", 'sl')
+    )
+    Enum.sort(aliases)
   end
 end

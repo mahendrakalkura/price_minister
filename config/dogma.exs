@@ -8,8 +8,5 @@ config :dogma,
     %Dogma.Rule.FunctionParentheses{
       enabled: false,
     },
-    %Dogma.Rule.LineLength{
-      max_length: 120,
-    },
   ],
   rule_set: Dogma.RuleSet.All

@@ -7,22 +7,19 @@ defmodule PriceMinister.Templates do
   require SweetXml
 
   def query(channel, alias) do
-    result = get_arguments(channel, alias)
-    result = PriceMinister.http_poison(result)
-    result = PriceMinister.parse_response(result)
-    result = parse_body(result)
-    result
+    arguments = get_arguments(channel, alias)
+    response = PriceMinister.http_poison(arguments)
+    body = PriceMinister.parse_response(response)
+    parse_body(body)
   end
 
   def parse_body({:ok, body}) do
     template = get_template(body)
-    result = {:ok, template}
-    result
+    {:ok, template}
   end
 
   def parse_body({:error, reason}) do
-    result = {:error, reason}
-    result
+    {:error, reason}
   end
 
   def get_arguments(channel, alias) do
@@ -43,45 +40,52 @@ defmodule PriceMinister.Templates do
       {:recv_timeout, Application.get_env(:httpoison, :timeout, nil)},
       {:timeout, Application.get_env(:httpoison, :timeout, nil)},
     ]
-    result = %{
+    %{
       "method" => method,
       "url" => url,
       "body" => body,
       "headers" => headers,
       "options" => options,
     }
-    result
   end
 
-  def get_template(body) do
+  def get_template(body) when Kernel.is_bitstring(body) do
     response = SweetXml.xpath(body, SweetXml.sigil_x("//response", 'e'))
     name = ""
-    name_fr = SweetXml.xpath(response, SweetXml.sigil_x("./prdtypelabel/text()", 's'))
+    name_fr = SweetXml.xpath(
+      response,
+      SweetXml.sigil_x("./prdtypelabel/text()", 's')
+    )
     sections = get_sections(response)
-    template = %{
+    %{
       "name" => name,
       "name_fr" => name_fr,
       "sections" => sections,
     }
-    template
   end
 
   def get_sections(response) do
     advert = get_section(response, "advert")
     media = get_section(response, "media")
     product = get_section(response, "product")
-    sections = %{
+    %{
       "advert" => advert,
       "media" => media,
       "product" => product,
     }
-    sections
   end
 
   def get_section(response, section) do
-    section = SweetXml.xpath(response, SweetXml.sigil_x("./attributes/#{section}", 'e'))
+    section = SweetXml.xpath(
+      response,
+      SweetXml.sigil_x("./attributes/#{section}", 'e')
+    )
+    get_attributes(section)
+  end
+
+  def get_attributes(section) do
     attributes = SweetXml.xpath(section, SweetXml.sigil_x("./attribute", 'el'))
-    attributes = Enum.reduce(
+    Enum.reduce(
       attributes,
       %{},
       fn(attribute, attributes) ->
@@ -89,81 +93,94 @@ defmodule PriceMinister.Templates do
         Map.merge(attributes, attribute)
       end
     )
-    attributes
   end
 
   def get_attribute(attribute) do
-    key = SweetXml.xpath(attribute, SweetXml.sigil_x("./key/text()", 's'))
+    key = get_key(attribute)
+    value = get_key(attribute)
+    %{
+      key => value
+    }
+  end
+
+  def get_key(attribute) do
+    SweetXml.xpath(attribute, SweetXml.sigil_x("./key/text()", 's'))
+  end
+
+  def get_value(attribute) do
     name = ""
-    name_fr = SweetXml.xpath(attribute, SweetXml.sigil_x("./label/text()", 's'))
-    is_mandatory = SweetXml.xpath(attribute, SweetXml.sigil_x("./mandatory/text()", 's'))
+
+    name_fr = SweetXml.xpath(
+      attribute,
+      SweetXml.sigil_x("./label/text()", 's')
+    )
+
+    is_mandatory = SweetXml.xpath(
+      attribute,
+      SweetXml.sigil_x("./mandatory/text()", 's')
+    )
     is_mandatory = get_is_mandatory(is_mandatory)
-    options = SweetXml.xpath(attribute, SweetXml.sigil_x("./valueslist/value/text()", 'sl'))
+
+    options = SweetXml.xpath(
+      attribute,
+      SweetXml.sigil_x("./valueslist/value/text()", 'sl')
+    )
     options = get_options(options)
-    type = SweetXml.xpath(attribute, SweetXml.sigil_x("./valuetype/text()", 's'))
+
+    type = SweetXml.xpath(
+      attribute,
+      SweetXml.sigil_x("./valuetype/text()", 's')
+    )
     type = get_type(options, type)
-    value = %{
+
+    %{
       "name" => name,
       "name_fr" => name_fr,
       "is_mandatory" => is_mandatory,
       "options" => options,
       "type" => type,
     }
-    attribute = %{
-      key => value
-    }
-    attribute
-  end
-
-  def get_is_mandatory("0") do
-    is_mandatory = false
-    is_mandatory
   end
 
   def get_is_mandatory("1") do
-    is_mandatory = true
-    is_mandatory
+    true
   end
 
-  def get_is_mandatory(_) do
-    is_mandatory = false
-    is_mandatory
+  def get_is_mandatory(_is_mandatory) do
+    false
   end
 
   def get_options(options) do
     options = Enum.map(options, fn(option) -> String.trim(option) end)
     options = Enum.filter(options, fn(option) -> String.length(option) > 0 end)
-    options = Enum.reduce(options, %{}, fn(option, options) -> Map.put(options, option, "") end)
-    options
+    Enum.reduce(
+      options,
+      %{},
+      fn(option, options) -> Map.put(options, option, "") end
+    )
   end
 
   def get_type(options, "Boolean") when Kernel.map_size(options) == 0 do
-    type = ~s(input[type="checkbox"])
-    type
+    ~s(input[type="checkbox"])
   end
 
   def get_type(options, "Date") when Kernel.map_size(options) == 0 do
-    type = ~s(input[type="date"])
-    type
+    ~s(input[type="date"])
   end
 
   def get_type(options, "Number") when Kernel.map_size(options) == 0 do
-    type = ~s(input[type="number"])
-    type
+    ~s(input[type="number"])
   end
 
   def get_type(options, "Text") when Kernel.map_size(options) == 0 do
-    type = ~s(input[type="text"])
-    type
+    ~s(input[type="text"])
   end
 
   def get_type(options, _type) when Kernel.map_size(options) == 0 do
-    type = ~s(input[type="text"])
-    type
+    ~s(input[type="text"])
   end
 
   def get_type(options, _type) when Kernel.map_size(options) != 0 do
-    type = "select"
-    type
+    "select"
   end
 end

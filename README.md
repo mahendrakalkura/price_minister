@@ -27,7 +27,10 @@ Add `:price_minister` to `def deps()` in your `mix.exs`.
 def deps do
   [
     ...
-    {:price_minister, git: "https://github.com/mahendrakalkura/price_minister.git"},
+    {
+      :price_minister,
+      git: "https://github.com/mahendrakalkura/price_minister.git",
+    },
     ...
   ]
 end
@@ -48,9 +51,11 @@ iex(1)> channel = %{
 ...(1)>   "login" => "...",
 ...(1)>   "pwd" => "...",
 ...(1)> }
-%{"login" => "...",
+%{
+  "login" => "...",
   "pwd" => "...",
-  "url" => "..."}
+  "url" => "...",
+}
 iex(2)> PriceMinister.Aliases.query(channel)
 {:ok, [...]}
 iex(3)> PriceMinister.Templates.query(channel, "...")

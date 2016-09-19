@@ -4,31 +4,33 @@ defmodule PriceMinister do
   require HTTPoison
   require URI
 
-  def http_poison(result) do
-    result = HTTPoison.request(result["method"], result["url"], result["body"], result["headers"], result["options"])
-    result
+  def http_poison(arguments) do
+    HTTPoison.request(
+      arguments["method"],
+      arguments["url"],
+      arguments["body"],
+      arguments["headers"],
+      arguments["options"]
+    )
   end
 
-  def parse_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    result = {:ok, body}
-    result
+  def parse_response(
+    {:ok, %HTTPoison.Response{status_code: 200, body: body}}
+  ) do
+    {:ok, body}
   end
 
   def parse_response({:ok, %HTTPoison.Response{status_code: status_code}}) do
-    result = {:error, status_code}
-    result
+    {:error, status_code}
   end
 
   def parse_response({:error, %HTTPoison.Error{reason: reason}}) do
-    result = {:error, reason}
-    result
+    {:error, reason}
   end
 
   def get_url(prefix, suffix) do
-    url = prefix
-    url = URI.parse(url)
-    url = URI.merge(url, suffix)
-    url = URI.to_string(url)
-    url
+    parse = URI.parse(prefix)
+    merge = URI.merge(parse, suffix)
+    URI.to_string(merge)
   end
 end
