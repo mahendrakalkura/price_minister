@@ -27,7 +27,7 @@ Add `:price_minister` to `def deps()` in your `mix.exs`.
 def deps do
   [
     ...
-    {:price_minister, git: "https://github.com/mahendrakalkura/priceminister.com.git"},
+    {:price_minister, git: "https://github.com/mahendrakalkura/price_minister.git"},
     ...
   ]
 end
