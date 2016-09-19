@@ -53,8 +53,7 @@ defmodule PriceMinister.Templates do
     response = SweetXml.xpath(body, SweetXml.sigil_x("//response", 'e'))
     name = ""
     name_fr = SweetXml.xpath(
-      response,
-      SweetXml.sigil_x("./prdtypelabel/text()", 's')
+      response, SweetXml.sigil_x("./prdtypelabel/text()", 's')
     )
     sections = get_sections(response)
     %{
@@ -77,8 +76,7 @@ defmodule PriceMinister.Templates do
 
   def get_section(response, section) do
     section = SweetXml.xpath(
-      response,
-      SweetXml.sigil_x("./attributes/#{section}", 'e')
+      response, SweetXml.sigil_x("./attributes/#{section}", 'e')
     )
     get_attributes(section)
   end
@@ -99,7 +97,7 @@ defmodule PriceMinister.Templates do
     key = get_key(attribute)
     value = get_key(attribute)
     %{
-      key => value
+      key => value,
     }
   end
 
@@ -110,26 +108,20 @@ defmodule PriceMinister.Templates do
   def get_value(attribute) do
     name = ""
 
-    name_fr = SweetXml.xpath(
-      attribute,
-      SweetXml.sigil_x("./label/text()", 's')
-    )
+    name_fr = SweetXml.xpath(attribute, SweetXml.sigil_x("./label/text()", 's'))
 
     is_mandatory = SweetXml.xpath(
-      attribute,
-      SweetXml.sigil_x("./mandatory/text()", 's')
+      attribute, SweetXml.sigil_x("./mandatory/text()", 's')
     )
     is_mandatory = get_is_mandatory(is_mandatory)
 
     options = SweetXml.xpath(
-      attribute,
-      SweetXml.sigil_x("./valueslist/value/text()", 'sl')
+      attribute, SweetXml.sigil_x("./valueslist/value/text()", 'sl')
     )
     options = get_options(options)
 
     type = SweetXml.xpath(
-      attribute,
-      SweetXml.sigil_x("./valuetype/text()", 's')
+      attribute, SweetXml.sigil_x("./valuetype/text()", 's')
     )
     type = get_type(options, type)
 
@@ -154,9 +146,7 @@ defmodule PriceMinister.Templates do
     options = Enum.map(options, fn(option) -> String.trim(option) end)
     options = Enum.filter(options, fn(option) -> String.length(option) > 0 end)
     Enum.reduce(
-      options,
-      %{},
-      fn(option, options) -> Map.put(options, option, "") end
+      options, %{}, fn(option, options) -> Map.put(options, option, "") end
     )
   end
 
