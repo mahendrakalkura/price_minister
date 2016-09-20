@@ -1,10 +1,6 @@
 defmodule PriceMinister.Aliases do
   @moduledoc false
 
-  require HTTPoison
-  require PriceMinister
-  require SweetXml
-
   def query(channel) do
     arguments = get_arguments(channel)
     response = PriceMinister.http_poison(arguments)

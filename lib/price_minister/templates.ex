@@ -1,11 +1,6 @@
 defmodule PriceMinister.Templates do
   @moduledoc false
 
-  require HTTPoison
-  require Kernel
-  require PriceMinister
-  require SweetXml
-
   def query(channel, alias) do
     arguments = get_arguments(channel, alias)
     response = PriceMinister.http_poison(arguments)

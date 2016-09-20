@@ -1,9 +1,6 @@
 defmodule PriceMinister do
   @moduledoc false
 
-  require HTTPoison
-  require URI
-
   def http_poison(arguments) do
     HTTPoison.request(
       arguments["method"],
