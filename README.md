@@ -56,8 +56,8 @@ iex(1)> channel = %{
   "pwd" => "...",
   "url" => "...",
 }
-iex(2)> PriceMinister.Aliases.query(channel)
+iex(2)> PriceMinister.Alias.query(channel)
 {:ok, [...]}
-iex(3)> PriceMinister.Templates.query(channel, "...")
+iex(3)> PriceMinister.Template.query(channel, "...")
 {:ok, %{...}}
 ```
