@@ -1,4 +1,4 @@
-defmodule PriceMinister.Alias do
+defmodule PriceMinister.Aliases do
   @moduledoc false
 
   def query(channel) do
