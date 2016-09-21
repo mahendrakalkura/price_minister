@@ -8,15 +8,6 @@ defmodule PriceMinister.Aliases do
     parse_body(body)
   end
 
-  def parse_body({:ok, body}) do
-    aliases = get_aliases(body)
-    {:ok, aliases}
-  end
-
-  def parse_body({:error, reason}) do
-    {:error, reason}
-  end
-
   def get_arguments(channel) do
     method = :get
     url = PriceMinister.get_url(channel["url"], "stock_ws")
@@ -40,6 +31,15 @@ defmodule PriceMinister.Aliases do
       "headers" => headers,
       "options" => options,
     }
+  end
+
+  def parse_body({:ok, body}) do
+    aliases = get_aliases(body)
+    {:ok, aliases}
+  end
+
+  def parse_body({:error, reason}) do
+    {:error, reason}
   end
 
   def get_aliases(body) do
