@@ -8,15 +8,6 @@ defmodule PriceMinister.Templates do
     parse_body(body)
   end
 
-  def parse_body({:ok, body}) do
-    template = get_template(body)
-    {:ok, template}
-  end
-
-  def parse_body({:error, reason}) do
-    {:error, reason}
-  end
-
   def get_arguments(channel, alias) do
     method = :get
     url = PriceMinister.get_url(channel["url"], "stock_ws")
@@ -42,6 +33,15 @@ defmodule PriceMinister.Templates do
       "headers" => headers,
       "options" => options,
     }
+  end
+
+  def parse_body({:ok, body}) do
+    template = get_template(body)
+    {:ok, template}
+  end
+
+  def parse_body({:error, reason}) do
+    {:error, reason}
   end
 
   def get_template(body) when Kernel.is_bitstring(body) do
