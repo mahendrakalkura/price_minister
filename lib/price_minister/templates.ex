@@ -90,7 +90,7 @@ defmodule PriceMinister.Templates do
 
   def get_attribute(attribute) do
     key = get_key(attribute)
-    value = get_key(attribute)
+    value = get_value(attribute)
     %{
       key => value,
     }
