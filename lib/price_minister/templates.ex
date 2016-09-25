@@ -113,11 +113,12 @@ defmodule PriceMinister.Templates do
     }
   end
 
-  def get_is_mandatory(is_mandatory) do
-    case is_mandatory do
-      "1" -> true
-      _is_mandatory -> false
-    end
+  def get_is_mandatory("1") do
+    true
+  end
+
+  def get_is_mandatory(_is_mandatory) do
+    false
   end
 
   def get_options(options) do
@@ -128,7 +129,7 @@ defmodule PriceMinister.Templates do
     Enum.sort_by(options, fn([key, _value]) -> String.downcase(key) end)
   end
 
-  def get_type(options, type) when Kernel.length(options) == 0 do
+  def get_type([], type) do
     case type do
       "Boolean" -> ~s(input[type="checkbox"])
       "Date" -> ~s(input[type="date"])
@@ -138,7 +139,7 @@ defmodule PriceMinister.Templates do
     end
   end
 
-  def get_type(options, _type) when Kernel.length(options) != 0 do
+  def get_type(_options, _type) do
     "select"
   end
 end
