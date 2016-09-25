@@ -45,6 +45,8 @@ defmodule PriceMinister.Templates do
   end
 
   def get_template(body) when Kernel.is_bitstring(body) do
+    guid = SweetXml.xpath(body, SweetXml.sigil_x("//request/alias/text()", 's'))
+
     response = SweetXml.xpath(body, SweetXml.sigil_x("//response", 'e'))
 
     name = ""
@@ -54,6 +56,7 @@ defmodule PriceMinister.Templates do
 
     sections = get_sections(response)
     %{
+      "guid" => guid,
       "name" => name,
       "name_fr" => name_fr,
       "sections" => sections,
