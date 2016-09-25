@@ -33,13 +33,13 @@ defmodule PriceMinister.Aliases do
     }
   end
 
-  def parse_body({:ok, body}) do
-    aliases = get_aliases(body)
-    {:ok, aliases}
-  end
-
-  def parse_body({:error, reason}) do
-    {:error, reason}
+  def parse_body(body) do
+    case body do
+      {:ok, contents} ->
+        aliases = get_aliases(contents)
+        {:ok, aliases}
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   def get_aliases(body) do
