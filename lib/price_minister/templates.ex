@@ -72,10 +72,7 @@ defmodule PriceMinister.Templates do
       response, SweetXml.sigil_x("./attributes/#{guid}", 'e')
     )
     attributes = get_attributes(section)
-    %{
-      "guid" => guid,
-      "attributes" => attributes,
-    }
+    %{"guid" => guid, "attributes" => attributes}
   end
 
   def get_attributes(section) do
