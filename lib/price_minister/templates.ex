@@ -136,10 +136,10 @@ defmodule PriceMinister.Templates do
     options = Enum.map(options, fn(option) -> String.trim(option) end)
     options = Enum.filter(options, fn(option) -> String.length(option) > 0 end)
     options = Enum.map(
-      options, fn(option) -> {option, ""} end
+      options, fn(option) -> [option, ""] end
     )
     options = Enum.uniq(options)
-    Enum.sort_by(options, fn({key, _value}) -> key end)
+    Enum.sort_by(options, fn([key, _value]) -> key end)
   end
 
   def get_type(options, "Boolean") when Kernel.length(options) == 0 do
