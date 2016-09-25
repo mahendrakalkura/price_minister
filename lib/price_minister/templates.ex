@@ -67,45 +67,34 @@ defmodule PriceMinister.Templates do
     advert = get_section(response, "advert")
     media = get_section(response, "media")
     product = get_section(response, "product")
-    %{
-      "advert" => advert,
-      "media" => media,
-      "product" => product,
-    }
+    [advert, media, product]
   end
 
-  def get_section(response, section) do
+  def get_section(response, guid) do
     section = SweetXml.xpath(
-      response, SweetXml.sigil_x("./attributes/#{section}", 'e')
+      response, SweetXml.sigil_x("./attributes/#{guid}", 'e')
     )
-    get_attributes(section)
+
+    attributes = get_attributes(section)
+
+    %{
+      "guid" => guid,
+      "attributes" => attributes,
+    }
   end
 
   def get_attributes(section) do
     attributes = SweetXml.xpath(section, SweetXml.sigil_x("./attribute", 'el'))
-    Enum.reduce(
-      attributes,
-      %{},
-      fn(attribute, attributes) ->
-        attribute = get_attribute(attribute)
-        Map.merge(attributes, attribute)
-      end
+    attributes = Enum.map(
+      attributes, fn(attribute) -> get_attribute(attribute) end
     )
+    attributes = Enum.uniq(attributes)
+    Enum.sort_by(attributes, fn(attribute) -> attribute["name"] end)
   end
 
   def get_attribute(attribute) do
-    key = get_key(attribute)
-    value = get_value(attribute)
-    %{
-      key => value,
-    }
-  end
+    guid = SweetXml.xpath(attribute, SweetXml.sigil_x("./key/text()", 's'))
 
-  def get_key(attribute) do
-    SweetXml.xpath(attribute, SweetXml.sigil_x("./key/text()", 's'))
-  end
-
-  def get_value(attribute) do
     name = ""
 
     name_fr = SweetXml.xpath(attribute, SweetXml.sigil_x("./label/text()", 's'))
@@ -126,6 +115,7 @@ defmodule PriceMinister.Templates do
     type = get_type(options, type)
 
     %{
+      "guid" => guid,
       "name" => name,
       "name_fr" => name_fr,
       "is_mandatory" => is_mandatory,
