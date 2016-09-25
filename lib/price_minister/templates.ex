@@ -35,25 +35,22 @@ defmodule PriceMinister.Templates do
     }
   end
 
-  def parse_body({:ok, body}) do
-    template = get_template(body)
-    {:ok, template}
+  def parse_body(body) do
+    case body do
+      {:ok, contents} ->
+        template = get_template(contents)
+        {:ok, template}
+      {:error, reason} -> {:error, reason}
+    end
   end
 
-  def parse_body({:error, reason}) do
-    {:error, reason}
-  end
-
-  def get_template(body) when Kernel.is_bitstring(body) do
+  def get_template(body) do
     guid = SweetXml.xpath(body, SweetXml.sigil_x("//request/alias/text()", 's'))
-
     response = SweetXml.xpath(body, SweetXml.sigil_x("//response", 'e'))
-
     name = ""
     name_fr = SweetXml.xpath(
       response, SweetXml.sigil_x("./prdtypelabel/text()", 's')
     )
-
     sections = get_sections(response)
     %{
       "guid" => guid,
@@ -74,9 +71,7 @@ defmodule PriceMinister.Templates do
     section = SweetXml.xpath(
       response, SweetXml.sigil_x("./attributes/#{guid}", 'e')
     )
-
     attributes = get_attributes(section)
-
     %{
       "guid" => guid,
       "attributes" => attributes,
@@ -94,26 +89,20 @@ defmodule PriceMinister.Templates do
 
   def get_attribute(attribute) do
     guid = SweetXml.xpath(attribute, SweetXml.sigil_x("./key/text()", 's'))
-
     name = ""
-
     name_fr = SweetXml.xpath(attribute, SweetXml.sigil_x("./label/text()", 's'))
-
     is_mandatory = SweetXml.xpath(
       attribute, SweetXml.sigil_x("./mandatory/text()", 's')
     )
     is_mandatory = get_is_mandatory(is_mandatory)
-
     options = SweetXml.xpath(
       attribute, SweetXml.sigil_x("./valueslist/value/text()", 'sl')
     )
     options = get_options(options)
-
     type = SweetXml.xpath(
       attribute, SweetXml.sigil_x("./valuetype/text()", 's')
     )
     type = get_type(options, type)
-
     %{
       "guid" => guid,
       "name" => name,
@@ -124,42 +113,29 @@ defmodule PriceMinister.Templates do
     }
   end
 
-  def get_is_mandatory("1") do
-    true
-  end
-
-  def get_is_mandatory(_is_mandatory) do
-    false
+  def get_is_mandatory(is_mandatory) do
+    case is_mandatory do
+      "1" -> true
+      _is_mandatory -> false
+    end
   end
 
   def get_options(options) do
     options = Enum.map(options, fn(option) -> String.trim(option) end)
     options = Enum.filter(options, fn(option) -> String.length(option) > 0 end)
-    options = Enum.map(
-      options, fn(option) -> [option, ""] end
-    )
+    options = Enum.map(options, fn(option) -> [option, ""] end)
     options = Enum.uniq(options)
     Enum.sort_by(options, fn([key, _value]) -> String.downcase(key) end)
   end
 
-  def get_type(options, "Boolean") when Kernel.length(options) == 0 do
-    ~s(input[type="checkbox"])
-  end
-
-  def get_type(options, "Date") when Kernel.length(options) == 0 do
-    ~s(input[type="date"])
-  end
-
-  def get_type(options, "Number") when Kernel.length(options) == 0 do
-    ~s(input[type="number"])
-  end
-
-  def get_type(options, "Text") when Kernel.length(options) == 0 do
-    ~s(input[type="text"])
-  end
-
-  def get_type(options, _type) when Kernel.length(options) == 0 do
-    ~s(input[type="text"])
+  def get_type(options, type) when Kernel.length(options) == 0 do
+    case type do
+      "Boolean" -> ~s(input[type="checkbox"])
+      "Date" -> ~s(input[type="date"])
+      "Number" -> ~s(input[type="number"])
+      "Text" -> ~s(input[type="text"])
+      _type -> ~s(input[type="text"])
+    end
   end
 
   def get_type(options, _type) when Kernel.length(options) != 0 do
