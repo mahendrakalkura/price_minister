@@ -46,10 +46,12 @@ defmodule PriceMinister.Templates do
 
   def get_template(body) when Kernel.is_bitstring(body) do
     response = SweetXml.xpath(body, SweetXml.sigil_x("//response", 'e'))
+
     name = ""
     name_fr = SweetXml.xpath(
       response, SweetXml.sigil_x("./prdtypelabel/text()", 's')
     )
+
     sections = get_sections(response)
     %{
       "name" => name,
