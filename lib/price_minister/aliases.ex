@@ -44,6 +44,7 @@ defmodule PriceMinister.Aliases do
       body,
       SweetXml.sigil_x("//response/producttypetemplate/alias/text()", 'sl')
     )
+    aliases = Enum.uniq(aliases)
     Enum.sort(aliases)
   end
 end
