@@ -9,10 +9,7 @@ defmodule PriceMinister.Templates do
   end
 
   def get_arguments(channel, alias) do
-    method = :get
     url = PriceMinister.get_url(channel["url"], "stock_ws")
-    body = ""
-    headers = []
     params = %{
       "action" => "producttypetemplate",
       "alias" => alias,
@@ -27,10 +24,10 @@ defmodule PriceMinister.Templates do
       {:timeout, Application.get_env(:httpoison, :timeout, nil)},
     ]
     %{
-      "method" => method,
+      "method" => :get,
       "url" => url,
-      "body" => body,
-      "headers" => headers,
+      "body" => "",
+      "headers" => [],
       "options" => options,
     }
   end
@@ -47,14 +44,13 @@ defmodule PriceMinister.Templates do
   def get_template(body) do
     guid = SweetXml.xpath(body, SweetXml.sigil_x("//request/alias/text()", 's'))
     response = SweetXml.xpath(body, SweetXml.sigil_x("//response", 'e'))
-    name = ""
     name_fr = SweetXml.xpath(
       response, SweetXml.sigil_x("./prdtypelabel/text()", 's')
     )
     sections = get_sections(response)
     %{
       "guid" => guid,
-      "name" => name,
+      "name" => "",
       "name_fr" => name_fr,
       "sections" => sections,
     }
@@ -86,7 +82,6 @@ defmodule PriceMinister.Templates do
 
   def get_attribute(attribute) do
     guid = SweetXml.xpath(attribute, SweetXml.sigil_x("./key/text()", 's'))
-    name = ""
     name_fr = SweetXml.xpath(attribute, SweetXml.sigil_x("./label/text()", 's'))
     is_mandatory = SweetXml.xpath(
       attribute, SweetXml.sigil_x("./mandatory/text()", 's')
@@ -102,7 +97,7 @@ defmodule PriceMinister.Templates do
     type = get_type(options, type)
     %{
       "guid" => guid,
-      "name" => name,
+      "name" => "",
       "name_fr" => name_fr,
       "is_mandatory" => is_mandatory,
       "options" => options,

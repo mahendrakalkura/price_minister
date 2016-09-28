@@ -9,10 +9,7 @@ defmodule PriceMinister.Aliases do
   end
 
   def get_arguments(channel) do
-    method = :get
     url = PriceMinister.get_url(channel["url"], "stock_ws")
-    body = ""
-    headers = []
     params = %{
       "action" => "producttypes",
       "login" => channel["login"],
@@ -25,10 +22,10 @@ defmodule PriceMinister.Aliases do
       {:timeout, Application.get_env(:httpoison, :timeout, nil)},
     ]
     %{
-      "method" => method,
+      "method" => :get,
       "url" => url,
-      "body" => body,
-      "headers" => headers,
+      "body" => "",
+      "headers" => [],
       "options" => options,
     }
   end
