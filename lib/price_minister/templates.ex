@@ -77,7 +77,7 @@ defmodule PriceMinister.Templates do
       attributes, fn(attribute) -> get_attribute(attribute) end
     )
     attributes = Enum.uniq(attributes)
-    Enum.sort_by(attributes, fn(attribute) -> attribute["name_fr"] end)
+    Enum.sort_by(attributes, fn(attribute) -> attribute["guid"] end)
   end
 
   def get_attribute(attribute) do
