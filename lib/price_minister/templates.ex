@@ -41,9 +41,11 @@ defmodule PriceMinister.Templates do
     end
   end
 
-  def get_template(body) do
-    guid = SweetXml.xpath(body, SweetXml.sigil_x("//request/alias/text()", 's'))
-    response = SweetXml.xpath(body, SweetXml.sigil_x("//response", 'e'))
+  def get_template(contents) do
+    guid = SweetXml.xpath(
+      contents, SweetXml.sigil_x("//request/alias/text()", 's')
+    )
+    response = SweetXml.xpath(contents, SweetXml.sigil_x("//response", 'e'))
     name_fr = SweetXml.xpath(
       response, SweetXml.sigil_x("./prdtypelabel/text()", 's')
     )
